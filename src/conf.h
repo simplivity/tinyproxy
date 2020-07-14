@@ -47,6 +47,7 @@ struct config_s {
         char *user;
         char *group;
         vector_t listen_addrs;
+        char *slack_ip_rewrite;
 #ifdef FILTER_ENABLE
         char *filter;
         unsigned int filter_url;        /* boolean */

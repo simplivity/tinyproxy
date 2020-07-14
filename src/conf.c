@@ -164,6 +164,8 @@ static HANDLE_FUNC (handle_upstream);
 static HANDLE_FUNC (handle_upstream_no);
 #endif
 
+static HANDLE_FUNC (handle_slack_ip_rewrite);
+
 static void config_free_regex (void);
 
 /*
@@ -264,7 +266,9 @@ struct {
 #endif
         /* loglevel */
         STDCONF ("loglevel", "(critical|error|warning|notice|connect|info)",
-                 handle_loglevel)
+                 handle_loglevel),
+
+        STDCONF ("slackiprewrite", "(" IP "|" IPV6 ")", handle_slack_ip_rewrite)
 };
 
 const unsigned int ndirectives = sizeof (directives) / sizeof (directives[0]);
@@ -313,6 +317,8 @@ static void free_config (struct config_s *conf)
         flush_access_list (conf->access_list);
         free_connect_ports_list (conf->connect_ports);
         hashmap_delete (conf->anonymous_map);
+
+        safefree(conf->slack_ip_rewrite);
 
         memset (conf, 0, sizeof(*conf));
 }
@@ -1049,3 +1055,8 @@ static HANDLE_FUNC (handle_upstream_no)
         return 0;
 }
 #endif
+
+static HANDLE_FUNC (handle_slack_ip_rewrite)
+{
+        return set_string_arg (&conf->slack_ip_rewrite, line, &match[2]);
+}

@@ -433,6 +433,18 @@ BAD_REQUEST_ERROR:
                         goto fail;
                 }
 
+                if (config->slack_ip_rewrite)
+                {
+                        /* *** SimpliVity HACK ***
+                         * Replace the host in all requests that use CONNECT method
+                         * with the IP address when the hostname contains slack.com
+                         */
+                        if (strstr(request->host, "slack.com")) {
+                                safefree(request->host);
+                                request->host = safestrdup(config->slack_ip_rewrite);
+                        }
+                }
+
                 connptr->connect_method = TRUE;
         } else {
 #ifdef TRANSPARENT_PROXY
